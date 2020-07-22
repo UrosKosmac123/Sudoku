@@ -1,7 +1,5 @@
-IGRE = ["Easy", "Normal", "Difficult"]
-VELIKOST_KVADRATKA = 50
-SIRINA = DOLZINA = VELIKOST_KVADRATKA * 9
 
+ŠTEVILO_DOVOLJENIH_NAPAK = 3
 
 class Sudoku_Napake:
 
@@ -45,7 +43,7 @@ class SudokuIgra:
         self.datoteka_tabele = datoteka_tabele
         self.zacni_igro = Sudoku_Tabela(datoteka_tabele).tabela
 
-    def start(self):
+    def zacetek(self):
         self.konec_igre = False
         self.uganka = []
         for i in range(9):
@@ -86,6 +84,3 @@ class SudokuIgra:
                 for j in range(3*stolpec, 3*(stolpec+1))
             ]
         )
-            
-
-
