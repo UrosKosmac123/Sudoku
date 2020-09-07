@@ -20,12 +20,22 @@ class State:
     Izpis stanja v berljivi obliki.
     """
     def __str__(self):
-        return "\n".join(
-            [
-                " ".join([str(v) if v is not None else "-" for v in col])
-                for col in self.matrix
-            ]
-        )
+        s = ""
+        s += "    1   2   3   4   5   6   7   8   9\n"
+        rows = [list(row) for row in zip(*self.matrix)]
+        for y, row in enumerate(rows):
+            s += str(y + 1) + " "
+            for x, val in enumerate(row):
+                v = str(val)
+                if val is None:
+                    v = "-"
+                if self.locked[x][y]:
+                    s += " [" + v + "]"
+                else:
+                    s += "  " + v + " "
+            s += "\n"
+
+        return s
 
     """
     Klonira stanje, če potrebujemo več različnih stanj.
@@ -35,6 +45,32 @@ class State:
         cloned.matrix = [col[:] for col in self.matrix]
         cloned.locked = [col[:] for col in self.locked]
         return cloned
+
+    def generate(self):
+        base  = 3
+        side  = base*base
+
+        # pattern for a baseline valid solution
+        def pattern(r,c): return (base*(r%base)+r//base+c)%side
+
+        # randomize rows, columns and numbers (of valid base pattern)
+        from random import sample
+        def shuffle(s): return sample(s,len(s)) 
+        rBase = range(base) 
+        rows  = [ g*base + r for g in shuffle(rBase) for r in shuffle(rBase) ] 
+        cols  = [ g*base + c for g in shuffle(rBase) for c in shuffle(rBase) ]
+        nums  = shuffle(range(1,base*base+1))
+
+        # produce board using randomized baseline pattern
+        board = [ [nums[pattern(r,c)] for c in cols] for r in rows ]
+
+        squares = side*side
+        empties = squares * 3//4
+        for p in sample(range(squares),empties):
+            board[p//side][p%side] = None 
+
+        self.matrix = board
+        self.locked = [[val is not None for val in col] for col in self.matrix]
 
     """
     Preveri, če je stanje veljavno.
@@ -57,7 +93,7 @@ class State:
     """
     def solved(self):
         for col in self.matrix:
-            for val in self.matrix[x]:
+            for val in col:
                 if val is None:
                     return False
         return True
@@ -82,32 +118,28 @@ class State:
         
         #optimatizacija
         return new
+
+
+    
+
 # test
 
 s = State()
-s.matrix = [
-    [1, 2, 3,   4, 5, 6,   7, 8, 9],
-    [4, 5, 6,   7, 8, 9,   1, 2, 3],
-    [7, 8, 9,   1, 2, 3,   4, 5, 6],
+s.generate()
 
-    [2, 3, 4,   5, 6, 7,   8, 9, 1],
-    [5, 6, 7,   8, 9, 1,   2, 3, 4],
-    [8, 9, 1,   2, 3, 4,   5, 6, 7],
+while not s.solved():
+    print(s)
+    try:
+        col = int(input("Izberi stolpec: ")) - 1
+        row = int(input("Izberi vrstico: ")) - 1
+        val = int(input("Vnesi vrednost: "))
+        s = s.mutate(col, row, val)
+    except Exception as e:
+        print(e)
+        continue;
 
-    [3, 4, 5,   6, 7, 8,   9, 1, 2],
-    [6, 7, 8,   9, 1, 2,   3, 4, 5],
-    [9, 1, 2,   3, 4, 5,   6, 7, 8]
-]
-print("Stanje 1 veljavno:", s.valid())
-
-s.matrix[1][1] = 13
-print("Stanje 2 veljavno:", s.valid())
-
-s.matrix[1][1] = None
-print("Stanje 3 veljavno:", s.valid())
-
-
+print("Reseno")
 print(s)
 
-x = input("Naslednja poteza")
-print(x)
+
+
