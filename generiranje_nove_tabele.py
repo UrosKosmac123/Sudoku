@@ -19,3 +19,7 @@ squares = side*side
 empties = squares * 3//4
 for p in sample(range(squares),empties):
     board[p//side][p%side] = None  
+
+numSize = len(str(side))
+for line in board: print("["+"  ".join(f"{n or '.':{numSize}}" for n in line)+"]")
+

@@ -4,6 +4,8 @@ def getBlockIndices(block):
     y = (block // 3) * 3
     return [[x + i % 3, y + i // 3] for i in range(9)]
 
+COLOR_YELLOW = u"\u001b[34m"
+
 """
 Stanje sudoku aplikacije.
 """
@@ -21,16 +23,16 @@ class State:
     """
     def __str__(self):
         s = ""
-        s += "    1   2   3   4   5   6   7   8   9\n"
+        s += u"\u001b[34m    1   2   3   4   5   6   7   8   9\u001b[0m\n"
         rows = [list(row) for row in zip(*self.matrix)]
         for y, row in enumerate(rows):
-            s += str(y + 1) + " "
+            s += u"\u001b[34m" + str(y + 1) + u" \u001b[0m"
             for x, val in enumerate(row):
                 v = str(val)
                 if val is None:
                     v = "-"
                 if self.locked[x][y]:
-                    s += " [" + v + "]"
+                    s += " [" + u"\u001b[33m"+ v + u"\u001b[0m" + "]"
                 else:
                     s += "  " + v + " "
             s += "\n"
@@ -114,32 +116,10 @@ class State:
             new.matrix[x][y] = value
         
         if not new.valid():
-            raise Exception("Ni veljavna matrika")
+            raise Exception("Napačna vrednost")
         
         #optimatizacija
         return new
-
-
-    
-
-# test
-
-s = State()
-s.generate()
-
-while not s.solved():
-    print(s)
-    try:
-        col = int(input("Izberi stolpec: ")) - 1
-        row = int(input("Izberi vrstico: ")) - 1
-        val = int(input("Vnesi vrednost: "))
-        s = s.mutate(col, row, val)
-    except Exception as e:
-        print(e)
-        continue;
-
-print("Reseno")
-print(s)
 
 
 
