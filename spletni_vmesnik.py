@@ -1,4 +1,4 @@
-from bottle import get, post request, run, template
+from bottle import get, post, run, template
 from core import State
 
 @get("/")
@@ -11,4 +11,4 @@ def post():
 
     return template("index", state=s)
 
-run(host="localhost", port="8081")
+run(reloader=True, debug=True, host="localhost", port="8081")
