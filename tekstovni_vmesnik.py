@@ -1,4 +1,4 @@
-from state import State
+from model import State
 
 def formatError(s):
     return u"\033[1;31;40m{}\033[0;0m".format(str(s))
