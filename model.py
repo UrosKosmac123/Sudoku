@@ -32,8 +32,11 @@ class State:
 
     def generate(self):
         """Generira novo začetno stanje."""
-        def pattern(r, c): return (3*(r % 3)+r//3+c) % 9
-        def shuffle(s): return sample(s, len(s))
+        def pattern(r, c):
+            return (3*(r % 3)+r//3+c) % 9
+        
+        def shuffle(s) -> list:
+            return sample(s, len(s))
 
         base = range(3)
         rows = [g*3 + r for g in shuffle(base) for r in shuffle(base)]
@@ -46,7 +49,6 @@ class State:
         for p in sample(range(81), 81 * 3//4):
             self.matrix[p//9][p % 9] = None
             self.locked[p//9][p % 9] = False
-
         return self
 
     def valid(self) -> bool:

@@ -1,9 +1,11 @@
 from bottle import route, request, response, run, template, redirect
 from argparse import ArgumentParser
-from data.user import User
-from data.game import Game
+from Shranjevanje.user import User
+from Shranjevanje.game import Game
 from model import State
 import json
+from collections import Counter
+from operator import itemgetter
 
 def get_user_from_cookie(req, res) -> User:
     id = req.get_cookie("SESSION")
@@ -72,10 +74,32 @@ def game_get(id: str):
 
     return template("game.tpl", user=user, game=game, errors=errors)
 
+@route("/igre", method="GET")
+def games_get():
+    """Seznam iger uporabnika."""
+    user = get_user_from_cookie(request, response)
+    if user.name is None:
+        return redirect("/")
+    games = Game.find_by_user(user.id)
+    return template("games.tpl", user=user, games=games)
+
+@route("/lestvica", method="GET")
+def leaderboard_get():
+    """Lestvica uporabnikov."""
+    user = get_user_from_cookie(request, response)
+    counter = Counter([g.user for g in Game.find_all() if g.state.solved()])
+    leaderboard = sorted(
+        [(u, counter[u.id]) for u in User.find_all() if counter[u.id] > 0],
+        key=itemgetter(1),
+        reverse=True)
+    if user.name is None:
+        return redirect("/")
+    return template("leaderboard.tpl", user=user, leaderboard=leaderboard)
+
 if __name__ == "__main__":
     parser = ArgumentParser(description="Sudoku spletni vmesnik.")
     parser.add_argument("--host", type=str, help="IP, na katerem posluša vmesnik.", default="localhost")
-    parser.add_argument("--port", type=int, help="TCP port, na katerem posluša vmesnik.", default=8080)
+    parser.add_argument("--port", type=int, help="TCP port, na katerem posluša vmesnik.", default=8082)
     parser.add_argument("--debug", type=bool, help="Razvojni način.", default=False)
 
     args = parser.parse_args()

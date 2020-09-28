@@ -1,6 +1,6 @@
 from uuid import uuid4
-from data.file import Filestore
-from state import State
+from Shranjevanje.file import Filestore
+from model import State
 
 store = Filestore("data-games.json")
 
