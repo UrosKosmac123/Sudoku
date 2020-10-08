@@ -2,3 +2,5 @@ data-games.json
 data-users.json
 __pycache__/model.cpython-37.pyc
 __pycache__/model.cpython-37.pyc
+views/.DS_Store
+.DS_Store
